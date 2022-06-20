@@ -10,10 +10,17 @@
 // Milestone 2 - Prendendo come riferimento il layout di esempio presente nell'html, stampiamo i post del nostro feed.
 // Milestone 3 - Se clicchiamo sul tasto "Mi Piace" cambiamo il colore al testo del bottone e incrementiamo il counter dei likes relativo.
 
+// BONUS
+// 1. Formattare le date in formato italiano (gg/mm/aaaa)
+// 2. Gestire l'assenza dell'immagine profilo con un elemento di fallback che contiene le iniziali dell'utente (es. Luca Formicola > LF).
+// 3. Al click su un pulsante "Mi Piace" di un post, se abbiamo già cliccato dobbiamo decrementare il contatore e cambiare il colore del bottone.
+
+
+// creo l'arrey ad oggetti
 const userArray = [
     {
         id:1 ,
-        name: 'Phil Mangione',
+        name: 'Aglieglie Brazorf ',
         profilepic : 'https://unsplash.it/300/300?image=1',
         date : '06/25/2021',
         post : 'https://unsplash.it/600/300?image=171',
@@ -22,8 +29,8 @@ const userArray = [
     },
     {
         id:2,
-        name: 'Phil Mangione',
-        profilepic : 'https://unsplash.it/300/300?image=7',
+        name: 'Giacomo Poretti',
+        profilepic : null ,
         date : '06/25/2021',
         post : 'https://unsplash.it/600/300?image=420',
         textpost :'Placeat libero ipsa nobis ipsum quibusdam quas harum ut. Distinctio minima iusto. Ad ad maiores et sint voluptate recusandae architecto. Et nihil ullam aut alias.',
@@ -31,7 +38,7 @@ const userArray = [
     },
     {
         id:3,
-        name: 'Phil Mangione',
+        name: 'Giovanni Storti',
         profilepic : 'https://unsplash.it/300/300?image=9',
         date : '06/25/2021',
         post : null,
@@ -39,8 +46,53 @@ const userArray = [
         like: 24,
     }
 ]
-
 drawAllPost(userArray)
+
+    // FUNZIONE DEL CLICK
+
+    // Al click del pulsante like:
+    // incremento il numero di like di 1 
+    // e aggiungo la classe .like-button--liked per cambiare il colore del pulsante like
+
+    const allLikeBtn = document.querySelectorAll('.js-like-button');
+    const allLikeCounter = document.querySelectorAll('.js-likes-counter');
+    for( let i=0; i < allLikeBtn.length; i++){
+        likeBtn = allLikeBtn[i];
+
+        likeBtn.addEventListener ('click', function(event) {
+            event.preventDefault();
+            if(!this.classList.contains('like-button--liked')){
+                this.classList.add('like-button--liked');
+
+                const relatedNumerLike = allLikeCounter[i];
+
+                let relatedLike = parseInt(relatedNumerLike.innerHTML);
+
+                relatedLike++
+
+                relatedNumerLike.innerHTML = relatedLike;
+
+            } else {
+                this.classList.remove('like-button--liked');
+
+                const relatedNumerLike = allLikeCounter[i];
+
+                let relatedLike = parseInt(relatedNumerLike.innerHTML);
+
+                relatedLike--
+
+                relatedNumerLike.innerHTML = relatedLike;
+            }                   
+        });
+
+    }
+
+
+// ----------
+// FUNZIONI
+// ----------
+
+
 function drawAllPost(postObjectsArray) {
         for(let i = 0; i < postObjectsArray.length; i++) {
             const thisPost = postObjectsArray[i];
@@ -55,17 +107,17 @@ function drawAllPost(postObjectsArray) {
     function drawSinglePost(postObject) {
 
         const {name, profilepic, date, post, textpost, like} = postObject;
-
         const postContainer = document.getElementById('container');
+       
         const postToDraw = `<div class="post">
         <div class="post__header">
             <div class="post-meta">                    
                 <div class="post-meta__icon">
-                    <img class="profile-pic" src="${profilepic}" alt="${name}">                    
+               ${profilepic === null ? splitName(name) :`<img class="profile-pic" src="${profilepic}" alt="${name}"></img>`} 
                 </div>
                 <div class="post-meta__data">
                     <div class="post-meta__author">${name}</div>
-                    <div class="post-meta__time">${date}</div>
+                    <div class="post-meta__time">${italianDate(date)}</div>
                 </div>                    
             </div>
         </div>
@@ -92,30 +144,21 @@ function drawAllPost(postObjectsArray) {
     }
 
 
-    // Al click del pulsante like:
-    // incremento il numero di like di 1 
-    // e aggiungo la classe .like-button--liked per cambiare il colore del pulsante like
+    
+// FUNZIONE per cambiare il tipo di data
 
-    const allLikeBtn = document.querySelectorAll('.js-like-button');
-    const allLikeCounter = document.querySelectorAll('.js-likes-counter');
-    for( let i=0; i < allLikeBtn.length; i++){
-        likeBtn = allLikeBtn[i];
+function italianDate(date){
+    const redate = date.split ("/");
+    const redate2 = redate[1] + '/' + redate[0] + '/' + redate[2];
+    return redate2
+}
 
-        likeBtn.addEventListener ('click', function(event) {
-            event.preventDefault();
-            if(!this.classList.contains('like-button--liked')){
-                this.classList.add('like-button--liked');
 
-                const relatedNumerLike = allLikeCounter[i];
+// FUNZIONE per prendersi le iniziali del nome e del cognomme
+// faccio il returno di una stringa in modo tale da poter dare lo stile all'immegine del profilo con le iniziali 
 
-                let relatedLike = parseInt(relatedNumerLike.innerHTML);
-
-                relatedLike++
-
-                relatedNumerLike.innerHTML = relatedLike;
-            }
-
-            
-        });
-
-    }
+function splitName(name){
+    const rename = name.split (" ");
+    const rename2 =rename[0][0] + rename[1][0];
+    return `<span class="profile-pic-default ">${rename2}</span>`
+}
